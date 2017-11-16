@@ -115,13 +115,17 @@
     <Compile Include="Controllers\MessagesController.cs" />
     <Compile Include="Dialogs\HelloDialog.cs" />
     <Compile Include="Dialogs\RootDialog.cs" />
+    <Compile Include="Dialogs\SearchRestaurantDialog.cs" />
     <Compile Include="Dialogs\UserInfoDialog.cs" />
     <Compile Include="Forms\ReservationForm.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
     <Compile Include="Models\Reservation.cs" />
+    <Compile Include="Models\Restaurant.cs" />
+    <Compile Include="Models\RootObject.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Utils\Cards.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="packages.config">

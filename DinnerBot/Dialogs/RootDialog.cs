@@ -15,7 +15,7 @@ namespace DinnerBot.Dialogs
     {
         private const string ReservationOption = "Reserve Table";
         private const string HelloOption = "Say Hello";
-
+        private const string SearchRestaurantsOptions = "Search Restaurants";
         public Task StartAsync(IDialogContext context)
         {
             context.Wait(MessageReceivedAsync);
@@ -79,7 +79,7 @@ namespace DinnerBot.Dialogs
             context,
             this.OnOptionSelected,
             // Present two (2) options to user
-            new List<string>() { ReservationOption, HelloOption },
+            new List<string>() { ReservationOption, HelloOption, SearchRestaurantsOptions },
             String.Format("Hi {0}, are you looking for to reserve a table or Just say hello?", context.UserData.Get<String>("Name")), "Not a valid option", 3);
         }
 
@@ -136,6 +136,10 @@ namespace DinnerBot.Dialogs
 
                     case HelloOption:
                         context.Call(new HelloDialog(), this.ResumeAfterUserHelloDialog);
+                        break;
+
+                    case SearchRestaurantsOptions:
+                        context.Call(new SearchRestaurantsDialog(), ResumeAfterUserHelloDialog);
                         break;
                 }
             }
