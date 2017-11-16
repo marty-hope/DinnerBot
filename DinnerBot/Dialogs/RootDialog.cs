@@ -20,11 +20,13 @@ namespace DinnerBot.Dialogs
             var activity = await result as Activity;
 
             // calculate something for us to return
-            int length = (activity.Text ?? string.Empty).Length;
+           
 
-            // return our reply to the user
-            await context.PostAsync($"You sent {activity.Text} which was {length} characters");
+            context.Call(new HelloDialog(), HelloDialogCallback);
+        }
 
+        private async Task HelloDialogCallback(IDialogContext context, IAwaitable<object> result)
+        {
             context.Wait(MessageReceivedAsync);
         }
     }
