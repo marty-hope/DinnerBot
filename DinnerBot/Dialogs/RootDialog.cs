@@ -3,25 +3,63 @@ using System.Threading.Tasks;
 using Microsoft.Bot.Builder.Dialogs;
 using Microsoft.Bot.Connector;
 using System.Collections.Generic;
-
 using DinnerBot.Models;
 using DinnerBot.Forms;
 using Microsoft.Bot.Builder.FormFlow;
+using Microsoft.Bot.Builder.Luis;
+using Microsoft.Bot.Builder.Luis.Models;
 
 namespace DinnerBot.Dialogs
 {
     [Serializable]
-    public class RootDialog : IDialog<object>
+    [LuisModel("e4f464d7-f97e-41c1-b00b-b73a45494747", "5a32688b2fa6429988329bb5a42c7323")]
+    public class RootDialog : LuisDialog<object>
     {
         private const string ReservationOption = "Reserve Table";
         private const string HelloOption = "Say Hello";
         private const string SearchRestaurantsOptions = "Search Restaurants";
-        public Task StartAsync(IDialogContext context)
+        [LuisIntent("")]
+        [LuisIntent("None")]
+        public async Task None(IDialogContext context, LuisResult result)
         {
-            context.Wait(MessageReceivedAsync);
-
-            return Task.CompletedTask;
+            string message = $"Sorry, I did not understand '{result.Query}'";
+            await context.PostAsync(message);
+            context.Wait(MessageReceived);
         }
+
+        [LuisIntent("ReserveATable")]
+        public async Task ReserveATable(IDialogContext context, LuisResult result)
+        {
+            try
+            {
+                await context.PostAsync("Great, lets book a table for you. You will need to provide a few details.");
+                var form = new FormDialog<Reservation>(
+                new Reservation(context.UserData.Get<String>("Name")),
+                ReservationForm.BuildForm,
+                FormOptions.PromptInStart,
+                null);
+
+                context.Call(form, this.ReservationFormComplete);
+            }
+            catch (Exception)
+            {
+                await context.PostAsync("Something really bad happened. You can try again later meanwhile I'll check what went wrong.");
+                context.Wait(MessageReceived);
+            }
+        }
+
+        [LuisIntent("SayHello")]
+        public async Task SayHello(IDialogContext context, LuisResult result)
+        {
+            context.Call(new HelloDialog(), this.ResumeAfterOptionDialog);
+        }
+        [LuisIntent("Help")]
+        public async Task Help(IDialogContext context, LuisResult result)
+        {
+            await context.PostAsync("Insert Help Dialog here");
+            context.Wait(MessageReceived);
+        }
+
         private async Task ReservationFormComplete(IDialogContext context, IAwaitable<Reservation> result)
         {
             try
